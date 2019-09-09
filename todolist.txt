@@ -1,0 +1,4 @@
+go shopping
+study math
+
+make some software
