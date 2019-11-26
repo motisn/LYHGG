@@ -7,6 +7,25 @@ solveRPN = head . foldl foldingFunc [] . words
           foldingFunc xs numberString = read numberString:xs
 
 solveS :: String -> String
+solveS x = let result = step x
+            in if length (words result) == 1 then result else solveS result
+
+step :: String -> String
+step = fst . foldl (\(xs, ys) -> \c ->
+    (case c of
+        '(' -> (xs ++ ys, "(")
+        ')' -> (xs ++ (if ys == [] then ")" else calc (tail ys)), [])
+        token -> (xs, ys ++ [token])
+    )) ([], [])
+
+calc :: String -> String
+calc s = let tokens = words s in 
+    case tokens of
+        "+":nums -> show . sum . map read $ nums
+        "*":nums -> show . product . map read $ nums
+        otherwise -> unwords tokens
+{--
+solveS :: String -> String
 solveS x = let result = iter x
            in if length (words result) == 1 then result else iter result
 
@@ -20,6 +39,7 @@ calc :: [String] -> [String]
 calc ("(":"+":xs) = words . show . sum . map read $ xs
 calc ("(":"*":xs) = words . show . product . map read $ xs
 calc xs = xs ++ [")"]
+--}
 
 data Section = Section { getA :: Int, getB :: Int, getC :: Int} deriving (Show)
 type RoadSystem = [Section]
